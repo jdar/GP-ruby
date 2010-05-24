@@ -1,0 +1,34 @@
+= RubyGP : A program-assembling program with Ruby stylings
+
+AI Group:  
+
+== Intro
+
+RubyGP is a simple concept interpreter for building Genetic Programs.
+
+Arguments in an Interpreter#sequence can be sampled from a weighted function list, cloned, or multi-inherited. Processed into a MultiStack. The end of one of the MultiStack stacks (such as the Integer stack) is then used to build some object, which is compared to a fitness object. (not yet implemented)
+
+These arguments can be of -any- type. Implement your own custom procs for a Proc stack, for example.  A sequence can be bred:
+
+  ...demonstrate...
+
+The methods that you 'expose' on MultiStack::Operations are accessible and destructive on the stack:
+
+  class MultiStack
+    module Operations
+      module_function # <-- leave this line. trust me.   
+      def add(a,b);      a + b end
+      def subtract(a,b); a - b end
+    end
+  end
+  class Interpreter
+#        ...
+    def self.function_list; %w(add add ERF ERF X) end
+#        ...
+  end
+
+The strings "ERF" and "X" are magic strings. See the code.
+
+
+darius.roberts@gmail.com
+with GP expertise by Bradford Barr
