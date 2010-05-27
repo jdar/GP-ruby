@@ -1,32 +1,23 @@
 require 'rubygems'
 require 'json'
 require 'ruby-debug'
+
+
 class MultiStack < Hash 
 #   has an efficient type-aware stack already been implemented?
 
-  # MYTODO: make this be type-agnostic (i.e., get rid of self[:int], and auto-detect types) 
+  # MYTODO: make this be type-agnostic (i.e., get rid of self[Fixnum], and auto-detect types) 
   # need an api concept. Maybe I should inherit from Array instead.  
   
-  def execute_proc(proc)
-    arity = proc.arity
-    return if self[:int].size < arity
-
-    self[:int] << proc.call(*self[:int].slice!(-arity,arity))
-  end
-  def execute_operation(operation_name)
-    arity = Operations.instance_method(operation_name).arity
-    return if self[:int].size < arity
-
-    self[:int] << Operations.send(operation_name, *self[:int].slice!(-arity,arity))
-  end
+  def stack; self end
   
-  def call(method_or_proc)
-    case method_or_proc
-      when Proc;  execute_proc(method_or_proc)
-      when String; execute_operation(method_or_proc)
-    end
+  def call_proc(proc)
+    arity = proc.arity
+    return if self[Fixnum].size < arity
+
+    self[Fixnum] << proc.call(*self[Fixnum].slice!(-arity,arity))
   end
-    
+      
   module Operations
     module_function # like 'private', but creates singleton-like method calling    
     def add(a,b);      a + b end
@@ -50,15 +41,17 @@ class Interpreter
     @stack = MultiStack.new {|h,k| h[k] = [] }
 
     @sequence.reverse.each do |arg|
-      append_to_stack(arg)
+      manipulate_stack(arg)
     end
   end
 
-  def append_to_stack(arg)
-    case arg
-     when "X";              @stack.call(x)
-     when String,Proc;      @stack.call(arg)
-     when Numeric;          @stack[:int] << arg 
+  def manipulate_stack(arg)
+    @stack.call_proc case arg
+     when "X";        x
+     when String;     MultiStack::Operations.method(arg).to_proc
+     when Proc;       arg
+     else
+        return @stack[arg.class] << arg
     end
   end
 
@@ -76,5 +69,12 @@ class Interpreter
       end
     end
   end 
+end
+class Proc
+  attr_accessor :type_sig
+  def initialize
+    @type_sig = (1..arity).collect{Integer}
+    super
+  end
 end
 

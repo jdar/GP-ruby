@@ -22,9 +22,18 @@ The methods that you 'expose' on MultiStack::Operations are accessible and destr
     end
   end
   class Interpreter
-#        ...
+    
+    def crossover; Interpreter.new( :crossover =>sequence) end
+    def mutate;    Interpreter.new( :mutate	   =>sequence) end
+
+    def self.evolve(generations, &fitness)
+		(0..generations).times do 
+			Interpreter.new
+		end 
+	end
+
     def self.function_list; %w(add add ERF ERF X) end
-#        ...
+
   end
 
 The strings "ERF" and "X" are magic strings. See the code.
