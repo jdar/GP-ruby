@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'interpreter'
+require 'ruby-debug'
 
 class MultiStack
   module Operations
@@ -9,6 +10,8 @@ class MultiStack
   end
 end
 class Interpreter
+#  def solve
+#  end
   def test_run
     @sequence.reverse.each do |arg|
       append_to_stack(arg)
@@ -43,6 +46,26 @@ class TestCaseInterpreter < Test::Unit::TestCase
     interpreter = Interpreter.new(:sequence=>[1,2, Proc.new{3},4,5])
     assert_equal [5,4,3,2,1], interpreter.stack[Fixnum]
   end
+  
+  # test utilities
+  def test_segment_method_works
+    interpreter = Interpreter.new(:sequence=>[1,2,"add",3,4])
+    assert_equal [1,2,"add"], interpreter.seg(0,2)
+    assert_equal [3,4], interpreter.seg(2,-1)
+    assert_equal [[1,2,"add"], [3,4]], interpreter.seg(2)
+  end
+  
+  # test solution appearance
+  def test_program_solves
+    interpreter = Interpreter.new(:sequence=>[1,2, Proc.new{3},4,5])
+    assert_equal 1, interpreter.solve # default #solve is the last Fixnum
+  end
+  
+  
+  # test long-term evolutionary pressures  
+  # a pressure to make it shorter-and-shorter
+        # VS
+  # a specific function to make it shorter and shorter
   
 end
 

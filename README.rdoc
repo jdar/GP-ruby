@@ -14,27 +14,20 @@ These arguments can be of -any- type. Implement your own custom procs for a Proc
 
 The methods that you 'expose' on MultiStack::Operations are accessible and destructive on the stack:
 
-  class MultiStack
-    module Operations
-      module_function # <-- leave this line. trust me.   
-      def add(a,b);      a + b end
-      def subtract(a,b); a - b end
-    end
-  end
-  class Interpreter
-    
-    def crossover; Interpreter.new( :crossover =>sequence) end
-    def mutate;    Interpreter.new( :mutate	   =>sequence) end
-
-    def self.evolve(generations, &fitness)
-		(0..generations).times do 
-			Interpreter.new
-		end 
+	class MultiStack
+	  module Operations
+	    module_function   
+	    def multiply(a,b); a * b    end
+	  end
 	end
 
-    def self.function_list; %w(add add ERF ERF X) end
+	class Parabola < Interpreter
+	  def self.function_list; %w(add add multiply ERF ERF X) end
+	  def solve
+	    self.stack[Fixnum].last
+	  end
+	end
 
-  end
 
 The strings "ERF" and "X" are magic strings. See the code.
 
